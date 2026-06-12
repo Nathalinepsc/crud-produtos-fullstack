@@ -22,7 +22,6 @@ namespace ProjetoNsaSenhora.Controllers
             produto.Id = Guid.NewGuid();
             produto.DataCadastro = DateTime.UtcNow;
             produto.Ativo = true;
-            produto.IsDeleted = false;
 
             await _appDbContext.Produtos.AddAsync(produto);
             await _appDbContext.SaveChangesAsync();
@@ -33,7 +32,7 @@ namespace ProjetoNsaSenhora.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProdutos()
         {
-            var produtos = await _appDbContext.Produtos.Where(p => p.Ativo && !p.IsDeleted).ToListAsync();
+            var produtos = await _appDbContext.Produtos.Where(p => p.Ativo).ToListAsync();
             return Ok(produtos);
         }
 
@@ -43,7 +42,8 @@ namespace ProjetoNsaSenhora.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduto(Guid id)
         {
-            var produto = await _appDbContext.Produtos.FirstOrDefaultAsync(p => p.Id == id && p.Ativo && !p.IsDeleted);
+            var produto = await _appDbContext.Produtos
+                .FirstOrDefaultAsync(p => p.Id == id && p.Ativo);
             if (produto == null)
             {
                 return NotFound();
@@ -57,7 +57,7 @@ namespace ProjetoNsaSenhora.Controllers
         public async Task<IActionResult> SearchProdutos(string descricao)
         {
             var produtos = await _appDbContext.Produtos
-                .Where(p => p.Descricao.Contains(descricao) && p.Ativo && !p.IsDeleted)
+                .Where(p => p.Descricao.Contains(descricao) && p.Ativo)
                 .ToListAsync();
             return Ok(produtos);
         }
@@ -66,7 +66,8 @@ namespace ProjetoNsaSenhora.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProduto(Guid id, Produto updatedProduto)
         {
-            var produto = await _appDbContext.Produtos.FirstOrDefaultAsync(p => p.Id == id && p.Ativo && !p.IsDeleted);
+            var produto = await _appDbContext.Produtos
+                .FirstOrDefaultAsync(p => p.Id == id && p.Ativo);
             if (produto == null)
             {
                 return NotFound();
@@ -84,22 +85,24 @@ namespace ProjetoNsaSenhora.Controllers
             return NoContent();
         }
 
-        // DELETE - Soft Delete. Marca o produto como Inativo (Ativo = false) e IsDeleted = true, sem remover fisicamente o registro do banco de dados.
+        // DELETE - Soft Delete. Marca o produto como Inativo (Ativo = false) sem remover fisicamente o registro do banco de dados.
         [HttpDelete("{id}")]
         public async Task<IActionResult> SoftDeleteProduto(Guid id)
         {
-            var produto = await _appDbContext.Produtos.FirstOrDefaultAsync(p => p.Id == id && p.Ativo && !p.IsDeleted);
+            var produto = await _appDbContext.Produtos
+                .FirstOrDefaultAsync(p => p.Id == id && p.Ativo);
+
             if (produto == null)
             {
                 return NotFound();
             }
 
             produto.Ativo = false;
-            produto.IsDeleted = true;
-            await _appDbContext.SaveChangesAsync();
-            return Ok(produto);
-        }
 
+            await _appDbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
 
     }
 }
