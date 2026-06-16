@@ -1,0 +1,38 @@
+@model List<ProjetoNsaSenhora.Web.Models.ProdutoViewModel>
+@{
+    ViewData["Title"] = "Produtos";
+}
+<h1>Produtos</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nome</th>
+            <th>Descrição</th>
+            <th>QuantidadeEstoque</th>
+            <th>PrecoUnitario</th>
+            <th>PercentualDesconto</th>
+            <th>DataCadastro</th>
+            <th>StatusCategoria</th>
+            <th>Ativo</th>
+            <th>ValorTotalEstoque</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var produto in Model)
+        {
+            <tr>
+                <td>@produto.Id</td>
+                <td>@produto.Nome</td>
+                <td>@produto.Descricao</td>
+                <td>@produto.QuantidadeEstoque</td>
+                <td>@produto.PrecoUnitario.ToString("C")</td>
+                <td>@produto.PercentualDesconto</td>
+                <td>@produto.DataCadastro</td>
+                <td>@produto.StatusCategoria</td>
+                <td>@produto.Ativo</td>
+                <td>@produto.ValorTotalEstoque.ToString("C")</td>
+            </tr>
+        }
+    </tbody>
+</table>
