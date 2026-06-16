@@ -43,6 +43,6 @@ namespace ProjetoNsaSenhora.Models
         public bool Ativo { get; set; }
 
         // Propriedade calculada para o valor total em estoque
-        public decimal ValorTotalEstoque => QuantidadeEstoque * PrecoUnitario;
+        public decimal ValorTotalEstoque { get; set; }
     }
 }

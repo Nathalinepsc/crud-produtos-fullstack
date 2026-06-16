@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProjetoNsaSenhora.Data;
 
@@ -10,9 +11,11 @@ using ProjetoNsaSenhora.Data;
 namespace ProjetoNsaSenhora.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260616152219_AddValorTotalEstoque")]
+    partial class AddValorTotalEstoque
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,6 +54,9 @@ namespace ProjetoNsaSenhora.Migrations
 
                     b.Property<int>("StatusCategoria")
                         .HasColumnType("int");
+
+                    b.Property<decimal>("ValorTotalEstoque")
+                        .HasColumnType("decimal(65,30)");
 
                     b.HasKey("Id");
 

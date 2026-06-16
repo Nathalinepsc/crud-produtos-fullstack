@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ProjetoNsaSenhora.Data;
 using ProjetoNsaSenhora.Models;
 
-namespace ProjetoNsaSenhora.Controllers
+namespace ProjetoNsaSenhora.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -25,10 +25,11 @@ namespace ProjetoNsaSenhora.Controllers
             produto.Id = Guid.NewGuid();
             produto.DataCadastro = DateTime.UtcNow;
             produto.Ativo = true;
+            produto.ValorTotalEstoque = produto.QuantidadeEstoque * produto.PrecoUnitario;
 
             await _appDbContext.Produtos.AddAsync(produto);
             await _appDbContext.SaveChangesAsync();
-
+            
             return CreatedAtAction(
                 nameof(GetProduto), 
                 new { id = produto.Id }, 
@@ -100,9 +101,10 @@ namespace ProjetoNsaSenhora.Controllers
             produto.PrecoUnitario = updatedProduto.PrecoUnitario;
             produto.PercentualDesconto = updatedProduto.PercentualDesconto;
             produto.StatusCategoria = updatedProduto.StatusCategoria;
+            produto.ValorTotalEstoque = updatedProduto.ValorTotalEstoque;
 
             await _appDbContext.SaveChangesAsync();
-
+            
             return NoContent();
         }
 
