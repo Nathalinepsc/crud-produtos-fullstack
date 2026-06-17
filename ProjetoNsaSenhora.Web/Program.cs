@@ -7,6 +7,8 @@ builder.Services.AddHttpClient("ApiProdutos", client =>
     client.BaseAddress = new Uri("http://localhost:5028/");
 });
 
+builder.Services.AddScoped<ProdutoApiService>();
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())

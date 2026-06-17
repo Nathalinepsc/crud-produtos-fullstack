@@ -1,29 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
-using ProjetoNsaSenhora.Web.Models;
-
-namespace ProjetoNsaSenhora.Web.Controllers;
 
 public class ProdutosController : Controller
 {
-    private readonly HttpClient _httpClient;
+    private readonly ProdutoApiService _produtoApiService;
 
-    public ProdutosController(IHttpClientFactory httpClientFactory)
+    public ProdutosController(ProdutoApiService produtoApiService)
     {
-        _httpClient = httpClientFactory.CreateClient("ApiProdutos");
+        _produtoApiService = produtoApiService;
     }
 
     public async Task<IActionResult> Index()
     {
-        var response = await _httpClient.GetAsync("api/produtos");
-
-        if (!response.IsSuccessStatusCode)
-        {
-            return View(new List<ProdutoViewModel>());
-        }
-
-        var produtos = await response.Content
-            .ReadFromJsonAsync<List<ProdutoViewModel>>();
-
-        return View(produtos ?? new List<ProdutoViewModel>());
+        var produtos = await _produtoApiService.ObterTodosAsync();
+        return View(produtos);
     }
 }
