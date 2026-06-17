@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using ProjetoNsaSenhora.Data;
 using ProjetoNsaSenhora.Middlewares;
+using ProjetoNsaSenhora.Repositories;
+using ProjetoNsaSenhora.Repositories.Interfaces;
+using ProjetoNsaSenhora.Services;
+using ProjetoNsaSenhora.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +16,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configura a conexão com o banco de dados MySQL
-var connectionString = builder.Configuration.GetConnectionString("AppDbConnectionString");
+var connectionString =
+    builder.Configuration.GetConnectionString("AppDbConnectionString")
+    ?? throw new InvalidOperationException("Connection string não configurada.");
+
 builder.Services.AddDbContext<AppDbContext>(options => 
 {
     options.UseMySql(
@@ -26,7 +33,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
                 errorNumbersToAdd: null);
         });
 });
+builder.Services.AddScoped<
+    IProdutoRepository,
+    ProdutoRepository>();
 
+builder.Services.AddScoped<
+    IProdutoService,
+    ProdutoService>();
+    
 var app = builder.Build();
 
 app.UseMiddleware<ExceptionMiddleware>();
@@ -40,7 +54,7 @@ if (app.Environment.IsDevelopment())
 // Redireciona HTTP para HTTPS
 app.UseHttpsRedirection();
 
-// Habilita CORS para permitir requisições de qualquer origem
+// Habilita autenticação e autorização (se necessário)
 app.UseAuthorization();
 
 // Ativa controllers

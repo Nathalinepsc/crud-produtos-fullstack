@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ProjetoNsaSenhora.Data;
+using ProjetoNsaSenhora.DTOs;
+using ProjetoNsaSenhora.Services.Interfaces;
 using ProjetoNsaSenhora.Models;
 
 namespace ProjetoNsaSenhora.Api.Controllers
@@ -9,30 +9,25 @@ namespace ProjetoNsaSenhora.Api.Controllers
     [Route("api/[controller]")]
     public class ProdutosController : ControllerBase
     {
-        // Injeção de dependência do AppDbContext para acesso ao banco de dados
-        private readonly AppDbContext _appDbContext;
-        public ProdutosController(AppDbContext appDbContext)
-        {
-            _appDbContext = appDbContext;
-        }
+       // Injeção de dependência do serviço de produtos
+       private readonly IProdutoService _produtoService;
 
-        // POST api/produtos
+       public ProdutosController(IProdutoService produtoService)
+       {
+           _produtoService = produtoService;
+       }
+
+        // POST Create - Cria um novo produto, calculando o valor total de estoque com base na quantidade e preço unitário.
         [HttpPost]
         [ProducesResponseType(typeof(Produto), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateProduto(Produto produto)
+        public async Task<IActionResult> CreateProduto(CreateProdutoDto dto)
         {
-            produto.Id = Guid.NewGuid();
-            produto.DataCadastro = DateTime.UtcNow;
-            produto.Ativo = true;
-            produto.ValorTotalEstoque = produto.QuantidadeEstoque * produto.PrecoUnitario;
+            var produto = await _produtoService.CreateAsync(dto);
 
-            await _appDbContext.Produtos.AddAsync(produto);
-            await _appDbContext.SaveChangesAsync();
-            
             return CreatedAtAction(
-                nameof(GetProduto), 
-                new { id = produto.Id }, 
+                nameof(GetProduto),
+                new { id = produto.Id },
                 produto);
         }
 
@@ -41,10 +36,7 @@ namespace ProjetoNsaSenhora.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetProdutos()
         {
-            var produtos = await _appDbContext.Produtos
-                .AsNoTracking()
-                .Where(p => p.Ativo)
-                .ToListAsync();
+            var produtos = await _produtoService.GetAllAsync();
 
             return Ok(produtos);
         }
@@ -55,9 +47,7 @@ namespace ProjetoNsaSenhora.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetProduto(Guid id)
         {
-            var produto = await _appDbContext.Produtos
-                .AsNoTracking()
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var produto = await _produtoService.GetByIdAsync(id);
 
             if (produto == null)
             {
@@ -73,10 +63,7 @@ namespace ProjetoNsaSenhora.Api.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> SearchProdutos(string descricao)
         {
-            var produtos = await _appDbContext.Produtos
-                .AsNoTracking()
-                .Where(p => p.Descricao.Contains(descricao))
-                .ToListAsync();
+            var produtos = await _produtoService.SearchByDescricaoAsync(descricao);
 
             return Ok(produtos);
         }
@@ -85,49 +72,33 @@ namespace ProjetoNsaSenhora.Api.Controllers
         [HttpPut("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> UpdateProduto(Guid id, Produto updatedProduto)
+        public async Task<IActionResult> UpdateProduto(Guid id, UpdateProdutoDto dto)
         {
-            var produto = await _appDbContext.Produtos
-                .FirstOrDefaultAsync(p => p.Id == id);
+            var atualizado = await _produtoService.UpdateAsync(id, dto);
 
-            if (produto == null)
+            if (!atualizado)
             {
                 return NotFound();
             }
 
-            produto.Nome = updatedProduto.Nome;
-            produto.Descricao = updatedProduto.Descricao;
-            produto.QuantidadeEstoque = updatedProduto.QuantidadeEstoque;
-            produto.PrecoUnitario = updatedProduto.PrecoUnitario;
-            produto.PercentualDesconto = updatedProduto.PercentualDesconto;
-            produto.StatusCategoria = updatedProduto.StatusCategoria;
-            produto.ValorTotalEstoque = updatedProduto.ValorTotalEstoque;
-
-            await _appDbContext.SaveChangesAsync();
-            
             return NoContent();
         }
 
-        // DELETE - Soft Delete. Marca o produto como Inativo (Ativo = false) sem remover fisicamente o registro do banco de dados.
+        // DELETE - Soft Delete. Marca o produto como Inativo (Ativo = false) em vez de removê-lo fisicamente do banco de dados.
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> SoftDeleteProduto(Guid id)
         {
-            var produto = await _appDbContext.Produtos
-                .FirstOrDefaultAsync(p => p.Id == id && p.Ativo);
+            var removido =
+                await _produtoService.SoftDeleteAsync(id);
 
-            if (produto == null)
+            if (!removido)
             {
                 return NotFound();
             }
 
-            produto.Ativo = false;
-
-            await _appDbContext.SaveChangesAsync();
-
             return NoContent();
         }
-
     }
 }

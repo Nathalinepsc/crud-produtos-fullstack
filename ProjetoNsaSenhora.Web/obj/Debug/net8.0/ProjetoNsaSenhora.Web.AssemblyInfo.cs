@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjetoNsaSenhora.Web")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7bb811ab53b2da9bd2feb8833fb8f830fc49ff2")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2dde97fb988a30248de26557a45cb8d662c0d8f1")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProjetoNsaSenhora.Web")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjetoNsaSenhora.Web")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

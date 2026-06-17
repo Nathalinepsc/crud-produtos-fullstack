@@ -11,11 +11,11 @@
             <th>Descrição</th>
             <th>QuantidadeEstoque</th>
             <th>PrecoUnitario</th>
+            <th>ValorTotalEstoque</th> 
+            <th>DataCadastro</th>   
             <th>PercentualDesconto</th>
-            <th>DataCadastro</th>
             <th>StatusCategoria</th>
             <th>Ativo</th>
-            <th>ValorTotalEstoque</th>
         </tr>
     </thead>
     <tbody>
@@ -27,11 +27,11 @@
                 <td>@produto.Descricao</td>
                 <td>@produto.QuantidadeEstoque</td>
                 <td>@produto.PrecoUnitario.ToString("C")</td>
-                <td>@produto.PercentualDesconto</td>
+                <td>@produto.ValorTotalEstoque.ToString("C")</td>
                 <td>@produto.DataCadastro</td>
+                <td>@produto.PercentualDesconto</td>
                 <td>@produto.StatusCategoria</td>
                 <td>@produto.Ativo</td>
-                <td>@produto.ValorTotalEstoque.ToString("C")</td>
             </tr>
         }
     </tbody>

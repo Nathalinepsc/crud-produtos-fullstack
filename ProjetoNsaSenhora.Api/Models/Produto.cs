@@ -1,48 +1,50 @@
 using System.ComponentModel.DataAnnotations;
 using ProjetoNsaSenhora.Enums;
-
 namespace ProjetoNsaSenhora.Models
 {
     public class Produto
     {
-        // Propriedade para controle de ID do produto
+        // ID do produto, gerado automaticamente
         public Guid Id { get; set; }
 
-        // Propriedade para controle de nome do produto com validação de requisitos de comprimento e obrigatoriedade
+        // Nome do produto, obrigatório, mínimo de 3 caracteres e máximo de 150 caracteres
         [Required(ErrorMessage = "O nome é obrigatório.")]
         [MinLength(3, ErrorMessage = "O nome deve ter pelo menos 3 caracteres.")]
         [StringLength(150, ErrorMessage = "O nome deve ter no máximo 150 caracteres.")]
         public string Nome { get; set; } = string.Empty;
 
-        // Propriedade para controle de descrição do produto
+        // Descrição do produto, obrigatória
         [Required(ErrorMessage = "A descrição é obrigatória.")]
+        [StringLength(300, ErrorMessage = "A descrição deve ter no máximo 300 caracteres.")]
+        [MinLength(5, ErrorMessage = "A descrição deve ter pelo menos 5 caracteres.")]
         public string Descricao { get; set; } = string.Empty;
 
-        // Propriedade para controle de quantidade em estoque sem aceitar valores negativos
+        // Quantidade em estoque, não pode ser negativa
         [Range(0, int.MaxValue,
             ErrorMessage = "A quantidade em estoque não pode ser negativa.")]
         public int QuantidadeEstoque { get; set; }
 
-        // Propriedade para controle de preço unitário sem aceitar valores negativos ou zero
+        // Preço unitário do produto, obrigatório e deve ser maior que zero
         [Required]
         [Range(0.01, double.MaxValue, ErrorMessage = "O preço unitário deve ser maior que zero.")]
         public decimal PrecoUnitario { get; set; }
+        
+        // Valor total em estoque, calculado na entidade
+        public decimal ValorTotalEstoque { get; set; }
 
-        // Propriedade para controle de data de cadastro
+        // Data de cadastro do produto, gerada automaticamente
         public DateTime DataCadastro { get; set; }
 
-        // Propriedade para controle de desconto
+        // Percentual de desconto do produto, deve estar entre 0 e 1. Ex.: 0.15 = 15%
         [Range(0, 1)]
-        public decimal PercentualDesconto { get; set; }
+        public double PercentualDesconto { get; set; }
 
-        // Propriedade para controle de categoria do produto com validação de enumeração
+        // Status da categoria do produto Enum com validação para garantir que o valor seja um dos definidos no enum
         [EnumDataType(typeof(StatusCategoria))]
-        public Enums.StatusCategoria StatusCategoria { get; set; }
+        public StatusCategoria StatusCategoria { get; set; }
 
-        // Propriedade para controle de ativação do produto
+        // Indica se o produto está ativo ou inativo
         public bool Ativo { get; set; }
 
-        // Propriedade calculada para o valor total em estoque
-        public decimal ValorTotalEstoque { get; set; }
     }
 }
