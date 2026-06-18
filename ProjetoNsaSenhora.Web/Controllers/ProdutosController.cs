@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using ProjetoNsaSenhora.Web.Models;
 
 public class ProdutosController : Controller
 {
@@ -14,4 +15,21 @@ public class ProdutosController : Controller
         var produtos = await _produtoApiService.ObterTodosAsync();
         return View(produtos);
     }
+
+    public IActionResult Create()
+    {
+        return View();
+    }
+
+   [HttpPost]
+    public async Task<IActionResult> Create(ProdutoCreateViewModel model)
+    {
+        if (!ModelState.IsValid)
+            return View(model);
+
+        await _produtoApiService.CriarAsync(model);
+
+        return RedirectToAction(nameof(Index));
+    }
+
 }

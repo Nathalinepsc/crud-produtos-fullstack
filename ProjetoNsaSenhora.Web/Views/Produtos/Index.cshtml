@@ -1,8 +1,11 @@
 @model List<ProjetoNsaSenhora.Web.Models.ProdutoViewModel>
 @{
-    ViewData["Title"] = "Produtos";
+    ViewData["Title"] = "Listagem de Produtos";
 }
 <h1>Produtos</h1>
+
+<a asp-action="Create" class="btn btn-primary mb-3">Adicionar Produto</a>
+
 <table class="table">
     <thead>
         <tr>
@@ -28,9 +31,9 @@
                 <td>@produto.QuantidadeEstoque</td>
                 <td>@produto.PrecoUnitario.ToString("C")</td>
                 <td>@produto.ValorTotalEstoque.ToString("C")</td>
-                <td>@produto.DataCadastro</td>
+                <td>@produto.DataCadastro.ToLocalTime().ToString("dd/MM/yyyy HH:mm")</td>
                 <td>@produto.PercentualDesconto</td>
-                <td>@produto.StatusCategoria</td>
+                <td>@produto.StatusCategoria.ToString()</td>
                 <td>@produto.Ativo</td>
             </tr>
         }

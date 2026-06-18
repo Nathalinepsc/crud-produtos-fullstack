@@ -24,11 +24,16 @@ public class ProdutoApiService
         return produtos ?? new List<ProdutoViewModel>();
     }
 
-    public async Task CriarAsync(ProdutoViewModel produto)
+    public async Task CriarAsync(ProdutoCreateViewModel produto)
     {
         var response = await _httpClient.PostAsJsonAsync("api/produtos", produto);
 
         response.EnsureSuccessStatusCode();
+    }
+
+    internal async Task CriarAsync(ProdutoViewModel produto)
+    {
+        throw new NotImplementedException();
     }
 }
 
